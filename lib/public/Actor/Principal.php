@@ -157,7 +157,12 @@ final readonly class Principal implements JsonSerializable {
 	 */
 	#[Override]
 	public function jsonSerialize(): array {
-		return ['type' => $this->type->value, 'id' => $this->id, 'origin' => $this->origin, 'source' => $this->source];
+		return [
+			'type' => $this->type->value,
+			'id' => $this->id,
+			'origin' => $this->origin,
+			'source' => $this->source,
+		];
 	}
 
 	/**
