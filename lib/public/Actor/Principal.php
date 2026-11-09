@@ -11,6 +11,7 @@ namespace OCP\Actor;
 
 use InvalidArgumentException;
 use JsonSerializable;
+use OCP\App\IAppManager;
 use OCP\AppFramework\Attribute\Consumable;
 use Override;
 
@@ -65,10 +66,11 @@ final readonly class Principal implements JsonSerializable {
 	 * Identifies a local user of this Nextcloud instance.
 	 *
 	 * @param non-empty-string $userId - user id
+	 * @param non-empty-string $remote - remote instance for federated users, null for local users
 	 * @since 36.0.0
 	 */
-	public static function user(string $userId): self {
-		return new self(PrincipalType::User, $userId);
+	public static function user(string $userId, ?string $remote = null): self {
+		return new self(PrincipalType::User, $userId, $remote);
 	}
 
 	/**
@@ -80,6 +82,11 @@ final readonly class Principal implements JsonSerializable {
 	 * @since 36.0.0
 	 */
 	public static function anonymous(string $externalId, string $token, ?string $source = null): self {
+		if ($source !== null) {
+			$matches = [];
+			preg_match('/^([^:]+):.+$/', $source, $matches) ?: throw new InvalidArgumentException(sprintf('Invalid source "%s"', $source));
+			self::validateAppId($matches[1]);
+		}
 		return new self(PrincipalType::Anonymous, $externalId, $token, $source);
 	}
 
@@ -89,6 +96,9 @@ final readonly class Principal implements JsonSerializable {
 	 * @since 36.0.0
 	 */
 	public static function bot(string $botId, ?string $source = null): self {
+		if ($source !== null) {
+			self::validateAppId($source);
+		}
 		return new self(PrincipalType::Bot, $botId, null, $source);
 	}
 
@@ -102,7 +112,7 @@ final readonly class Principal implements JsonSerializable {
 	 * @since 36.0.0
 	 */
 	public static function system(string $appId, ?string $source = null): self {
-		// todo: consider if we want to call IAppManager::cleanAppId here - or even validate the app is installed
+		self::validateAppId($appId);
 		return new self(PrincipalType::System, $appId, null, $source);
 	}
 
@@ -186,6 +196,18 @@ final readonly class Principal implements JsonSerializable {
 			|| ($origin !== null && !is_string($origin)) || $origin === ''
 			|| ($source !== null && !is_string($source)) || $source === '') {
 			throw new InvalidArgumentException('Invalid principal data');
+		}
+	}
+
+	/**
+	 * Verify the given app id is valid
+	 * @param string $appId - app id to validate
+	 * @throws InvalidArgumentException - If the app id is invalid
+	 */
+	private static function validateAppId(string $appId): void {
+		$appManager = \OCP\Server::get(IAppManager::class);
+		if ($appId === '' || $appId !== $appManager->cleanAppId($appId) || !$appManager->isEnabledForAnyone($appId)) {
+			throw new InvalidArgumentException(sprintf('Invalid app id "%s"', $appId));
 		}
 	}
 }
