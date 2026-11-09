@@ -72,19 +72,6 @@ final readonly class Principal implements JsonSerializable {
 	}
 
 	/**
-	 * Identifies a federated user, e.g. a user from another Nextcloud instance.
-	 *
-	 * This is essentially a user with an origin set to the remote instance.
-	 *
-	 * @param non-empty-string $userId - federated user id
-	 * @param non-empty-string $remote - remote instance
-	 * @since 36.0.0
-	 */
-	public static function federatedUser(string $userId, string $remote): self {
-		return new self(PrincipalType::User, $userId, $remote);
-	}
-
-	/**
 	 * Identifies an anonymous user, e.g. a public visitor of a public share.
 	 *
 	 * @param non-empty-string $externalId - anonymous user id (e.g. the nickname set by the public visitor)
