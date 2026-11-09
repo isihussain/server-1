@@ -77,17 +77,17 @@ final readonly class Principal implements JsonSerializable {
 	 * Identifies an anonymous user, e.g. a public visitor of a public share.
 	 *
 	 * @param non-empty-string $externalId - anonymous user id (e.g. the nickname set by the public visitor)
-	 * @param non-empty-string $token - e.g. the share or room token
+	 * @param non-empty-string $scope - the scope the anonymous id is unique within, e.g. a share token, a Talk room token or a form hash
 	 * @param ?non-empty-string $source app-namespaced kind of external user, e.g. `files_sharing:visitor` or `spreed:guest`
 	 * @since 36.0.0
 	 */
-	public static function anonymous(string $externalId, string $token, ?string $source = null): self {
+	public static function anonymous(string $externalId, string $scope, ?string $source = null): self {
 		if ($source !== null) {
 			$matches = [];
 			preg_match('/^([^:]+):.+$/', $source, $matches) ?: throw new InvalidArgumentException(sprintf('Invalid source "%s"', $source));
 			self::validateAppId($matches[1]);
 		}
-		return new self(PrincipalType::Anonymous, $externalId, $token, $source);
+		return new self(PrincipalType::Anonymous, $externalId, $scope, $source);
 	}
 
 	/**
