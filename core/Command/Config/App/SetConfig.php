@@ -150,7 +150,8 @@ class SetConfig extends Base {
 			try {
 				$currType = $this->appConfig->getValueType($appName, $configName);
 				if ($type === null || $typeString === null || $type === $currType || !$this->ask($input, $output, $typeString)) {
-					$type = $currType;
+					// Remove potential sensitive flag from type
+					$type = $currType ^ IAppConfig::FLAG_SENSITIVE;
 				} else {
 					$updated = $this->appConfig->updateType($appName, $configName, $type);
 				}
@@ -237,7 +238,7 @@ class SetConfig extends Base {
 			}
 
 		} else {
-			$output->writeln('<info>Config value were not updated</info>');
+			$output->writeln('<info>Config value was not updated</info>');
 		}
 
 		return 0;
