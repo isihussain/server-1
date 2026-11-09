@@ -27,7 +27,7 @@ use Override;
  *
  * ## Examples
  * ```php
- * // 1. User acting as itself
+ * // 1. User acting as themselves
  * $actor = Actor::of(Principal::user('alice'));
  *
  * // 2. User impersonating another user
