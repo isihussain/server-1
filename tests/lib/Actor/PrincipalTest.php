@@ -20,7 +20,7 @@ class PrincipalTest extends TestCase {
 	public static function dataFactories(): array {
 		return [
 			'user' => [fn () => Principal::user('alice'), PrincipalType::User, 'alice', null, null, 'user|alice'],
-			'federated user' => [fn () => Principal::federatedUser('bob', 'cloud.example'), PrincipalType::User, 'bob', 'cloud.example', null, 'user|bob@cloud.example'],
+			'federated user' => [fn () => Principal::user('bob', 'cloud.example'), PrincipalType::User, 'bob', 'cloud.example', null, 'user|bob@cloud.example'],
 			'anonymous' => [
 				fn () => Principal::anonymous('nickname', 'sharetoken', 'files_sharing:visitor'),
 				PrincipalType::Anonymous, 'nickname', 'sharetoken', 'files_sharing:visitor', 'anonymous|nickname@sharetoken|files_sharing:visitor',
@@ -45,7 +45,7 @@ class PrincipalTest extends TestCase {
 
 	public static function dataInvalid(): array {
 		return [
-			'federated user with empty remote' => [fn () => Principal::federatedUser('bob', ''), 'Invalid origin for principal of type "user"'],
+			'federated user with empty remote' => [fn () => Principal::user('bob', ''), 'Invalid origin for principal of type "user"'],
 			'anonymous with empty token' => [fn () => Principal::anonymous('nickname', '', 'files_sharing:visitor'), 'Invalid origin for principal of type "anonymous"'],
 			'anonymous without source' => [fn () => Principal::anonymous('nickname', 'sharetoken'), 'Invalid source for principal of type "anonymous"'],
 			'anonymous with empty source' => [fn () => Principal::anonymous('nickname', 'sharetoken', ''), 'Invalid source for principal of type "anonymous"'],
@@ -88,8 +88,8 @@ class PrincipalTest extends TestCase {
 			'different id' => [$anonymous, fn () => Principal::anonymous('other', 'sharetoken', 'files_sharing:visitor'), false],
 			'different origin' => [$anonymous, fn () => Principal::anonymous('nickname', 'other', 'files_sharing:visitor'), false],
 			'different type' => [fn () => Principal::user('alice'), fn () => Principal::bot('alice'), false],
-			'local and federated user' => [fn () => Principal::user('bob'), fn () => Principal::federatedUser('bob', 'cloud.example'), false],
-			'federated users of different remotes' => [fn () => Principal::federatedUser('bob', 'cloud.example'), fn () => Principal::federatedUser('bob', 'other.example'), false],
+			'local and federated user' => [fn () => Principal::user('bob'), fn () => Principal::user('bob', 'cloud.example'), false],
+			'federated users of different remotes' => [fn () => Principal::user('bob', 'cloud.example'), fn () => Principal::user('bob', 'other.example'), false],
 			'bots of different apps' => [fn () => Principal::bot('summarizer', 'spreed'), fn () => Principal::bot('summarizer', 'assistant'), false],
 			'bot with and without app' => [fn () => Principal::bot('summarizer', 'spreed'), fn () => Principal::bot('summarizer'), false],
 			'same component name of different apps' => [fn () => Principal::system('files', 'retention'), fn () => Principal::system('files_versions', 'retention'), false],
@@ -108,7 +108,7 @@ class PrincipalTest extends TestCase {
 	public function testJsonSerialize(): void {
 		$this->assertSame(
 			['type' => 'user', 'id' => 'bob', 'origin' => 'cloud.example', 'source' => null],
-			Principal::federatedUser('bob', 'cloud.example')->jsonSerialize(),
+			Principal::user('bob', 'cloud.example')->jsonSerialize(),
 		);
 	}
 

@@ -25,10 +25,10 @@ use Override;
 #[Consumable(since: '36.0.0')]
 final readonly class Principal implements JsonSerializable {
 	/**
-	 * @param non-empty-string $id - uid, federated user id, external user id, bot id or system component
-	 * @param ?non-empty-string $origin - remote instance for federated users, share/room token for external users, null otherwise
-	 * @param ?non-empty-string $source - app-namespaced kind of external user, e.g. "spreed.guest" or "files_sharing.link";
-	 *                                  optionally the app owning a bot or system component, e.g. "spreed"; null for users
+	 * @param non-empty-string $id - user id, anonymous user id, bot id or app id of a system component
+	 * @param ?non-empty-string $origin - remote instance for federated users, scope of anonymous users, null otherwise
+	 * @param ?non-empty-string $source - app-namespaced kind of anonymous user, e.g. "spreed:guest" or "files_sharing:visitor";
+	 *                                  optionally the app owning a bot, e.g. "spreed", or the system component name; null for users
 	 */
 	private function __construct(
 		public PrincipalType $type,
@@ -63,10 +63,10 @@ final readonly class Principal implements JsonSerializable {
 	}
 
 	/**
-	 * Identifies a local user of this Nextcloud instance.
+	 * Identifies a local or federated user.
 	 *
 	 * @param non-empty-string $userId - user id
-	 * @param non-empty-string $remote - remote instance for federated users, null for local users
+	 * @param ?non-empty-string $remote - remote instance for federated users, null for local users
 	 * @since 36.0.0
 	 */
 	public static function user(string $userId, ?string $remote = null): self {

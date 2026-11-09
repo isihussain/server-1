@@ -21,7 +21,7 @@ class ActorTest extends TestCase {
 	public static function dataActors(): array {
 		return [
 			'user' => [fn () => Actor::of(Principal::user('alice')), 'user|alice', null, 'user|alice'],
-			'federated user' => [fn () => Actor::of(Principal::federatedUser('bob', 'cloud.example')), 'user|bob@cloud.example', null, 'user|bob@cloud.example'],
+			'federated user' => [fn () => Actor::of(Principal::user('bob', 'cloud.example')), 'user|bob@cloud.example', null, 'user|bob@cloud.example'],
 			'anonymous' => [
 				fn () => Actor::of(Principal::anonymous('nickname', 'sharetoken', 'files_sharing:visitor')),
 				'anonymous|nickname@sharetoken|files_sharing:visitor', null, 'anonymous|nickname@sharetoken|files_sharing:visitor',

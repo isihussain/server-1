@@ -46,10 +46,10 @@ use Override;
  *     ->impersonate(Principal::user('alice'));
  *
  * // 6. A federated user acting as itself
- * $actor = Actor::of(Principal::federatedUser('bob', 'cloud.example'));
+ * $actor = Actor::of(Principal::user('bob', 'cloud.example'));
  *
- * // 7. An public visitor acting as itself
- * $actor = Actor::of(Principal::anonymous('nickname', 'files_sharing:visitor', 'public-share-token'));
+ * // 7. A public visitor acting as itself
+ * $actor = Actor::of(Principal::anonymous('nickname', 'public-share-token', 'files_sharing:visitor'));
  * ```
  *
  * @psalm-immutable
